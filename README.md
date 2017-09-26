@@ -18,3 +18,10 @@ npm start # starts a server on http://localhost:3001
 ```
 
 Enjoy! :shipit:
+
+# TODO
+
+  - [ ] Enable deletion of articles
+  - [ ] Avoid duplication of articles
+  - [ ] Do some testing
+  - [ ] General code cleanup
