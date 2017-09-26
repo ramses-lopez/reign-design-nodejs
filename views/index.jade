@@ -17,5 +17,5 @@ html(lang="en")
                 a(class=title, href=article.url || '#', target='_blank')
                   span #{article.title} 
                 span.text-muted #{article.author} 
-              span.created-at #{article.date}
+              span(title=article.createdAt).created-at #{article.date}
                   

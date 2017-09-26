@@ -30,6 +30,14 @@ const DBHandler = {
     latestNews: latestNews
 }
 
+function dateSort(field){
+    return function(a, b){
+        const dateA = moment(a[field])
+        const dateB = moment(b[field])
+        return dateA.isAfter(dateB) ? -1 : dateA.isBefore(dateB) ? 1 : 0;
+    }
+}
+
 async function getArticles(){
     try{
         //&page=1&hitsPerPage=10
@@ -37,16 +45,10 @@ async function getArticles(){
         const envelope = response.ok ? await response.json() : []
         const articles = envelope.hits
 
-        console.log(moment(articles[0].created_at).format('lll'))
-
         const articlesToBeSaved = articles
         //let's discard news w/o title
         .filter(art => art.story_title !== null || art.title !== null)
-        .sort((a, b) => {
-            const dateA = moment(a.created_at)
-            const dateB = moment(b.created_at)
-            return dateA.isAfter(dateB) ? -1 : dateA.isBefore(dateB) ? 1 : 0;
-        })
+        // .sort(dateSort('created_at'))
         .filter(art => {
             // if its the first load, then we get all the articles available.
             // otherwise I'll check against the latest article date, and get the most recent ones.
@@ -76,7 +78,9 @@ async function getArticles(){
 
 async function latestNews(){
     const latestNews = await Article.find()
-    return latestNews.map(news => {
+    return latestNews
+    .sort(dateSort('createdAt'))
+    .map(news => {
         news.date = moment(news.createdAt).fromNow()
         return news
     })
