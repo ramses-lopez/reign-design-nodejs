@@ -2,88 +2,104 @@ const mongoose = require('mongoose')
 const fetch = require('node-fetch')
 const moment = require('moment')
 
-const connectionString = process.env.MONGO_URL || 'mongodb://172.17.0.2:27017/hn_test'
+const connectionString = process.env.MONGO_URL || 'mongodb://localhost:27017/hn_test'
 
 //mongoose database schema
 const articleSchema = mongoose.Schema({
-    title: String,
-    author: String,
-    createdAt: Date,
-    url: String
+	title: String,
+	author: String,
+	createdAt: Date,
+	url: String
 })
 const Article = mongoose.model('Article', articleSchema)
 
-mongoose.connect(connectionString,
-    { useMongoClient: true, promiseLibrary: global.Promise });
+mongoose.connect(connectionString, { useMongoClient: true, promiseLibrary: global.Promise });
 
 //mongo connection handling
 const db = mongoose.connection
-db.on('error', console.error.bind(console, 'connection error:'))
+db.on('error', (err) => {
+	console.error.bind(console, 'connection error:')
+	throw err
+})
 db.once('open', () => console.log('mongo connnection succesful'))
 
 //main object
 const DBHandler = {
-    latestUpdate: null,
-    mostRecentArticle: null,
-    connectionString: connectionString,
-    getArticles: getArticles,
-    latestNews: latestNews
+	latestUpdate: null,
+	mostRecentArticle: null,
+	connectionString: connectionString,
+	getArticles: getArticles,
+	latestNews: latestNews,
+	removeArticle: removeArticle
 }
 
 function dateSort(field){
-    return function(a, b){
-        const dateA = moment(a[field])
-        const dateB = moment(b[field])
-        return dateA.isAfter(dateB) ? -1 : dateA.isBefore(dateB) ? 1 : 0;
-    }
+	return function(a, b){
+		const dateA = moment(a[field])
+		const dateB = moment(b[field])
+		return dateA.isAfter(dateB) ? -1 : dateA.isBefore(dateB) ? 1 : 0;
+	}
+}
+
+async function removeArticle(id){
+	try{
+		const art = await Article.findById(id)
+		const rp = await art.remove()
+		console.log(rp);
+	}
+	catch(err){
+		throw err
+	}
+
+
 }
 
 async function getArticles(){
-    try{
-        //&page=1&hitsPerPage=10
-        const response = await fetch('https://hn.algolia.com/api/v1/search_by_date?query=nodejs')
-        const envelope = response.ok ? await response.json() : []
-        const articles = envelope.hits
+	try{
+		//&page=1&hitsPerPage=10
+		const response = await fetch('https://hn.algolia.com/api/v1/search_by_date?query=nodejs')
+		const envelope = response.ok ? await response.json() : []
+		const articles = envelope.hits
 
-        const articlesToBeSaved = articles
-        //let's discard news w/o title
-        .filter(art => art.story_title !== null || art.title !== null)
-        // .sort(dateSort('created_at'))
-        .filter(art => {
-            // if its the first load, then we get all the articles available.
-            // otherwise I'll check against the latest article date, and get the most recent ones.
-            return DBHandler.mostRecentArticle === null || moment(art.created_at.isAfter(moment(DBHandler.mostRecentArticle)))
-        })
-        //here we create new models for the newly received news
-        .map(art => {
-            console.log(art.created_at, art.story_title || art.title)
-            return new Article({
-                title: art.title || art.story_title,
-                author: art.author,
-                url: art.url || art.story_url,
-                createdAt: moment(art.created_at)
-            })
-        })
-        .map(art => art.save())
+		const articlesToBeSaved = articles
+		//let's discard news w/o title
+		.filter(art => art.story_title !== null || art.title !== null)
+		// .sort(dateSort('created_at'))
+		.filter(art => {
+			// if its the first load, then we get all the articles available.
+			// otherwise I'll check against the latest article date, and get the most recent ones.
+			return DBHandler.mostRecentArticle === null || moment(art.created_at.isAfter(moment(DBHandler.mostRecentArticle)))
+		})
+		//here we create new models for the newly received news
+		.map(art => {
+			console.log(art.created_at, art.story_title || art.title)
+			return new Article({
+				title: art.title || art.story_title,
+				author: art.author,
+				url: art.url || art.story_url,
+				createdAt: moment(art.created_at)
+			})
+		})
+		.map(art => art.save())
 
-        //To avoid duplicating articles on the DB, I'll save the most recent article date
-        if(DBHandler.mostRecentArticle === null) articles[0].created_at
-        console.log(`${articlesToBeSaved.length} articles will be saved`)
-        return await Promise.all(articlesToBeSaved)
-    }
-    catch(err){
-        throw err
-    }
+		//To avoid duplicating articles on the DB, I'll save the most recent article date
+		if(DBHandler.mostRecentArticle === null) articles[0].created_at
+		console.log(`${articlesToBeSaved.length} articles will be saved`)
+		return await Promise.all(articlesToBeSaved)
+	}
+	catch(err){
+		throw err
+	}
 }
 
 async function latestNews(){
-    const latestNews = await Article.find()
-    return latestNews
-    .sort(dateSort('createdAt'))
-    .map(news => {
-        news.date = moment(news.createdAt).fromNow()
-        return news
-    })
+	const latestNews = await Article.find()
+	return latestNews
+	.sort(dateSort('createdAt'))
+	.map(news => {
+		news.date = moment(news.createdAt).fromNow()
+		return news
+	})
 }
 
 module.exports = DBHandler

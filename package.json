@@ -6,6 +6,7 @@
   "dependencies": {
     "bootstrap": "^4.0.0-beta",
     "express": "^4.15.5",
+    "font-awesome": "^4.7.0",
     "jade": "^1.11.0",
     "moment": "^2.18.1",
     "mongoose": "^4.11.13",

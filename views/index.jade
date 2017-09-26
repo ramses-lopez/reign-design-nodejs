@@ -3,19 +3,52 @@ html(lang="en")
   head
     title= pageTitle
     link(rel='stylesheet',href='/node_modules/bootstrap/dist/css/bootstrap.min.css')
-    link(rel='stylesheet',href='/css/styles.css')
+    link(rel='stylesheet',href='/node_modules/font-awesome/css/font-awesome.min.css')
+    link(rel='stylesheet',href='/css/styles.css')        
   body.container-fluid
     .jumbotron.bg-warning
       h1.display-3 HN Feed
-      p.lead We <3 hacker news!
+      p.lead We 
+        i.fa.fa-heart  hacker news!
     .row
       .col-12
         ul.list-group        
           each article in articles 
-            li.list-group-item.d-flex.justify-content-between
-              span
+            li(id='id#{article.id}').list-group-item.d-flex.justify-content-between
+              div
                 a(class=title, href=article.url || '#', target='_blank')
                   span #{article.title} 
                 span.text-muted #{article.author} 
-              span(title=article.createdAt).created-at #{article.date}
-                  
+              div
+                span.created-at #{article.date}
+                span
+                  a(title='Delete article', data-id=article.id, onclick="deleteArticle('#{article.id}')", href='').delete-article 
+                    i.fa.fa-trash 
+                    
+    script(type='text/javascript').
+      const xhr = new XMLHttpRequest()
+      xhr.addEventListener('load', function(){
+        const articleId = this.responseText
+        console.log(this.responseText)
+        //when an article is deleted from mongo, it is removed from the list
+        const el = document.querySelector(`#id${articleId}`)
+        el.addEventListener('transitionend', removeArticleFromDOM, true)
+        el.classList.add('deleted-article')
+      })
+      
+      xhr.addEventListener('error', function(){
+          console.error(this.responseText)
+      })
+      
+      function deleteArticle(id){
+          xhr.open('DELETE', `/remove/${id}`)
+          xhr.send()
+      }
+      
+      function removeArticleFromDOM(){
+          console.log(this);
+          //-   document.querySelector(`#id${articleId}`).remove()
+      }
+      
+      
+      

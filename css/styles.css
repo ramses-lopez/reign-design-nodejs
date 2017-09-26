@@ -4,12 +4,29 @@ body{
 }
 
 .list-group-item{
+	transition-property: height;
+	transition-duration: 1s;
     background-color: #ffffff;
     border: 1px #cccccc solid;
+	height: 100%;
 }
 
 .list-group-item:hover{
     background-color: #fafafa
+}
+
+.deleted-article{
+	transition-property: height;
+	transition-duration: 1s;
+	height: 0%;
+}
+
+.list-group-item:hover .delete-article{
+    visibility: visible;
+}
+
+.delete-article{
+	visibility: hidden;
 }
 
 .title a, .created-at{
