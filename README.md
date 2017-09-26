@@ -1,3 +1,1 @@
 # reign-design-nodejs
-
-Some instructions will live here ...

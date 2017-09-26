@@ -1,0 +1,15 @@
+doctype html
+html(lang="en")
+  head
+    title= pageTitle
+    link(rel='stylesheet',href='/node_modules/bootstrap/dist/css/bootstrap.min.css')
+  body.container-fluid
+    .jumbotron
+      h1.display-3 HN Feed
+      p.lead We love hacker news!
+    .row
+      .col-12
+        ul.list-group
+          li.list-group-item
+            #{articles}
+    

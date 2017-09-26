@@ -1,0 +1,33 @@
+{
+  "name": "reign-design-nodejs",
+  "version": "1.0.0",
+  "description": "ReignDesign nodeJS test",
+  "main": "index.js",
+  "dependencies": {
+    "bootstrap": "^4.0.0-beta",
+    "express": "^4.15.5",
+    "jade": "^1.11.0",
+    "mongoose": "^4.11.13",
+    "node-fetch": "^1.7.3"
+  },
+  "devDependencies": {
+    "faucet": "0.0.1",
+    "tape": "^4.8.0"
+  },
+  "scripts": {
+    "test": "test "
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ramses-lopez/reign-design-nodejs.git"
+  },
+  "keywords": [
+    "nodejs"
+  ],
+  "author": "ramses.lopezs@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ramses-lopez/reign-design-nodejs/issues"
+  },
+  "homepage": "https://github.com/ramses-lopez/reign-design-nodejs#readme"
+}
