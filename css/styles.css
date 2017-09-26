@@ -1,0 +1,22 @@
+body{
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+
+.list-group-item{
+    background-color: #ffffff;
+    border: 1px #cccccc solid;
+}
+
+.list-group-item:hover{
+    background-color: #fafafa
+}
+
+.title a, .created-at{
+    color: #333333;
+    font-size: 13pt;
+}
+
+.author{
+    color: #999999;
+}

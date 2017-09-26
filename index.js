@@ -1,6 +1,6 @@
-var express = require('express')
-var app = express()
-const fetch = require('node-fetch')
+const express = require('express')
+const app = express()
+const dbHandler = require('./dbHandler')
 
 app.set('view engine', 'jade');
 
@@ -8,23 +8,25 @@ app.use('/js', express.static(__dirname + '/js'))
 app.use('/css', express.static(__dirname + '/css'))
 app.use('/node_modules', express.static(__dirname + '/node_modules'))
 
-
-const ticker = () => {
+//article refresh
+const refreshArticles = () => {
     setTimeout(() => {
         console.log('its ' + (new Date()).toString())
-        ticker()
-    }, 1000)
+        refreshArticles()
+    }, process.env.REFRESH_TIMEOUT)
 }
 
-ticker()
+// refreshArticles()
 
 app.get('/', async (req, res) => {
-    const response = await fetch('https://hn.algolia.com/api/v1/search_by_date?query=nodejs&page=1&hitsPerPage=5')
-    const newArticles = response.ok ? await response.json() : []
-
-    debugger
-
-	res.render('index.jade', {pageTitle: 'HN Feed', articles: newArticles})
+    try{
+        // await dbHandler.getArticles()
+    	res.render('index', {pageTitle: 'HN Feed', articles: await dbHandler.latestNews()})
+    }
+    catch(err){
+        console.error(err);
+        res.render('error', {error: err.toString()})
+    }
 })
 
 port = process.env.PORT || 3001

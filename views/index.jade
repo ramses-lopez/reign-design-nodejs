@@ -3,13 +3,19 @@ html(lang="en")
   head
     title= pageTitle
     link(rel='stylesheet',href='/node_modules/bootstrap/dist/css/bootstrap.min.css')
+    link(rel='stylesheet',href='/css/styles.css')
   body.container-fluid
-    .jumbotron
+    .jumbotron.bg-warning
       h1.display-3 HN Feed
-      p.lead We love hacker news!
+      p.lead We <3 hacker news!
     .row
       .col-12
-        ul.list-group
-          li.list-group-item
-            #{articles}
-    
+        ul.list-group        
+          each article in articles 
+            li.list-group-item.d-flex.justify-content-between
+              span
+                a(class=title, href=article.url || '#', target='_blank')
+                  span #{article.title} 
+                span.text-muted #{article.author} 
+              span.created-at #{article.date}
+                  
