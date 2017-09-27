@@ -19,7 +19,7 @@
   },
   "scripts": {
     "start": "node index.js",
-    "test": "faucet tests/*.js"
+    "test": "faucet tests/*.test.js"
   },
   "repository": {
     "type": "git",

@@ -18,9 +18,18 @@ export REFRESH_INTERVAL=60000 #defaults to 1 hour
 After this is done, run:
 ```shell
 npm install # installs all dependencies
-npm start # starts a server on http://localhost:3001
 ```
-The app will fetch the current news available at ``.
+
+Then, you can
+```shell
+npm start # starts a server on http://localhost:3001
+npm test # run the tests
+```
+
+The app will fetch the current news available at `https://hn.algolia.com/api/v1/search_by_date?query=nodejs`.
 After that, it will automatically fetch articles according to the time defined on `REFRESH_INTERVAL`
 
-Enjoy! :shipit:
+## Next steps
+
+---------------------
+Thanks for for your review! :shipit:

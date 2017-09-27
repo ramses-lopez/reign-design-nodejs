@@ -32,7 +32,6 @@ html(lang="en")
         console.log(this.responseText)
         //when an article is deleted from mongo, it is removed from the list
         const el = document.querySelector(`#id${articleId}`)
-        el.addEventListener('transitionend', removeArticleFromDOM, true)
         el.classList.add('deleted-article')
       })
       
@@ -44,11 +43,3 @@ html(lang="en")
           xhr.open('DELETE', `/remove/${id}`)
           xhr.send()
       }
-      
-      function removeArticleFromDOM(){
-          console.log(this);
-          //-   document.querySelector(`#id${articleId}`).remove()
-      }
-      
-      
-      
