@@ -29,7 +29,7 @@ body{
 	visibility: hidden;
 }
 
-.title a, .created-at{
+.title, .created-at{
     color: #333333;
     font-size: 13pt;
 }

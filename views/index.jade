@@ -16,9 +16,9 @@ html(lang="en")
           each article in articles 
             li(id='id#{article.id}').list-group-item.d-flex.justify-content-between
               div
-                a(class=title, href=article.url || '#', target='_blank')
-                  span #{article.title} 
-                span.text-muted #{article.author} 
+                a(href=article.url || '#', target='_blank')
+                  span.title #{article.title} 
+                span.author - #{article.author} -
               div
                 span.created-at #{article.date}
                 span
