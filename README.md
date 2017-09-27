@@ -10,7 +10,9 @@ The application expects an environment variable with the connection string for m
 
 If not set, it defaults to `mongodb://localhost:27017/hn_test`
 ```shell
-export MONGO_URL=<mongo server url> #i.e: mongodb://172.17.0.2:27017/hn_test
+export MONGO_URL=<mongo server url> #defaults to mongodb://localhost:27017/hn_test`
+#optionally, set the time to wait between fetching of articles
+export REFRESH_INTERVAL=60000 #defaults to 1 hour
 ```
 
 After this is done, run:
@@ -27,4 +29,4 @@ Enjoy! :shipit:
   - [ ] Avoid duplication of articles
   - [x] Check for articles once in an hour
   - [ ] Do some testing
-  - [ ] General code cleanup
+  - [x] General code cleanup

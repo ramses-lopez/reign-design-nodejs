@@ -109,13 +109,13 @@ async function getArticlesFromAPI(){
 
 //gets all the articles on the database
 async function latestNews(){
-	const latestNews = await Article.find()
-	return latestNews
-	.sort(dateSort('createdAt'))
-	.map(news => {
-		news.date = moment(news.createdAt).fromNow()
-		return news
-	})
+    const latestNews = await Article.find()
+    return latestNews
+    .sort(dateSort('createdAt'))
+    .map(news => {
+        news.date = moment(news.createdAt).fromNow()
+        return news
+    })
 }
 
 module.exports = DBHandler
