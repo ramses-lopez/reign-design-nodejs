@@ -23,7 +23,8 @@ Enjoy! :shipit:
 
 # TODO
 
-  - [ ] Enable deletion of articles
+  - [x] Enable deletion of articles
   - [ ] Avoid duplication of articles
+  - [x] Check for articles once in an hour
   - [ ] Do some testing
   - [ ] General code cleanup
