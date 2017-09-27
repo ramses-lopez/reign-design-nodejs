@@ -18,7 +18,8 @@
     "tape": "^4.8.0"
   },
   "scripts": {
-    "test": "test "
+    "start": "node index.js",
+    "test": "faucet tests/*.js"
   },
   "repository": {
     "type": "git",

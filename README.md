@@ -20,13 +20,7 @@ After this is done, run:
 npm install # installs all dependencies
 npm start # starts a server on http://localhost:3001
 ```
+The app will fetch the current news available at ``.
+After that, it will automatically fetch articles according to the time defined on `REFRESH_INTERVAL`
 
 Enjoy! :shipit:
-
-# TODO
-
-  - [x] Enable deletion of articles
-  - [ ] Avoid duplication of articles
-  - [x] Check for articles once in an hour
-  - [ ] Do some testing
-  - [x] General code cleanup

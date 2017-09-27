@@ -1,11 +1,11 @@
 const test = require('tape')
-const assert = require('assert')
 
-
-test('it saves into the db', () => {
-    assert.equal(1, 2)
+test('it saves into the db', t => {
+    t.equal(1, 1)
+    t.end()
 })
 
-test('it reads from mongo', () => {
-    assert.equal(1, 1)
+test('it reads from mongo', t => {
+    t.equal(2, 1)
+    t.end()
 })
