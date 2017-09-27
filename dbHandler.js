@@ -9,62 +9,71 @@ Connection.init()
 let refreshInterval = process.env.REFRESH_INTERVAL || 1000*60*60 //defaults to one hour
 
 if(process.env.REFRESH_INTERVAL == undefined){
-    console.log('REFRESH_INTERVAL not set. defaulting to ', refreshInterval)
+	console.log('REFRESH_INTERVAL not set. defaulting to ', refreshInterval)
 }
 
 const DBHandler = {
-    latestFetch: null
+	latestFetch: null
 }
 
 function dateSort(field){
-    return function(a, b){
-        const dateA = moment(a[field])
-        const dateB = moment(b[field])
-        return dateA.isAfter(dateB) ? -1 : dateA.isBefore(dateB) ? 1 : 0;
-    }
+	return function(a, b){
+		const dateA = moment(a[field])
+		const dateB = moment(b[field])
+		return dateA.isAfter(dateB) ? -1 : dateA.isBefore(dateB) ? 1 : 0;
+	}
 }
 
 DBHandler.removeArticle = async function removeArticle(id){
-    try{
-        await Article.findById(id).remove()
-    }
-    catch(err){
-        throw err
-    }
+	try{
+		await Article.findById(id).remove()
+	}
+	catch(err){
+		throw err
+	}
 }
 
 //retrieves articles from the API
 DBHandler.getArticlesFromAPI = async function getArticlesFromAPI(){
-    try{
-        //&page=1&hitsPerPage=10
-        const response = await fetch('https://hn.algolia.com/api/v1/search_by_date?query=nodejs')
-        const envelope = response.ok ? await response.json() : []
-        const articles = envelope.hits
+	try{
+		//&page=1&hitsPerPage=10
+		const response = await fetch('https://hn.algolia.com/api/v1/search_by_date?query=nodejs')
+		const envelope = response.ok ? await response.json() : []
+		const articles = envelope.hits
 
-        const articlesToBeSaved = articles
-        //let's discard news w/o title
-        .filter(art => art.story_title !== null || art.title !== null)
-        .sort(dateSort('created_at'))
-        .map(DBHandler.handleArticle)
-        .map(art => art.save())
+		//get the last article saved
+		let lastArticle = await Article.findOne().sort('-createdAt').limit(1).exec()
+		if(lastArticle == null)
+		lastArticle = {createdAt: (new Date(2017,1,1)).toISOString()}
 
-        return await Promise.all(articlesToBeSaved)
-    }
-    catch(err){
-        throw err
-    }
+		const articlesToBeSaved = articles
+		//let's discard news w/o title
+		.filter(art => art.story_title !== null || art.title !== null)
+		//to avoid saving duplicates, filter articles older than the most recent article in db
+		.filter(DBHandler.filterArticlesByDate(lastArticle.createdAt))
+		.sort(dateSort('created_at'))
+		.map(DBHandler.handleArticle)
+		.map(art => art.save())
+
+		console.log(articlesToBeSaved.length + ' to be saved');
+
+		return await Promise.all(articlesToBeSaved)
+	}
+	catch(err){
+		throw err
+	}
 }
 
 //gets all the articles on the database
 DBHandler.latestNews = async function latestNews(){
-    const latestNews = await Article.find()
+	const latestNews = await Article.find()
 	const now = new Date()
-    return latestNews
-    .sort(dateSort('createdAt'))
-    .map(news => {
-        news.date = DBHandler.dateLabel(news.createdAt, now)
-        return news
-    })
+	return latestNews
+	.sort(dateSort('createdAt'))
+	.map(news => {
+		news.date = DBHandler.dateLabel(news.createdAt, now)
+		return news
+	})
 }
 
 DBHandler.handleArticle = (art) => {
@@ -86,21 +95,29 @@ DBHandler.dateLabel = (date, relativeDate) => {
 	else return dateA.format('hh:mm a')
 }
 
+DBHandler.filterArticlesByDate = (mostRecentDate) => {
+	mostRecentDate = moment(mostRecentDate)
+	return function(article){
+		const tmp = moment(article.created_at)
+		return tmp.isAfter(mostRecentDate)
+	}
+}
+
 //article refresh
 ;(() => {
-    if(DBHandler.latestFetch === null){
-        console.log('loading initial batch...');
-        DBHandler.getArticlesFromAPI()
-        .then(() => console.log('articles fetched!'))
-        .catch(err => console.error(err))
-    }
+	if(DBHandler.latestFetch === null){
+		console.log('loading initial batch...');
+		DBHandler.getArticlesFromAPI()
+		.then(() => {})
+		.catch(err => console.error(err))
+	}
 
-    setInterval(() => {
-        console.log('Getting new articles ' + (new Date()).toString())
-        DBHandler.getArticlesFromAPI()
-        .then(() => console.log(`Articles retrieved!`))
-        .catch(err => console.error(err))
-    }, refreshInterval)
+	setInterval(() => {
+		console.log('Getting new articles ' + (new Date()).toString())
+		DBHandler.getArticlesFromAPI()
+		.then(() => console.log(`Articles retrieved!`))
+		.catch(err => console.error(err))
+	}, refreshInterval)
 })()
 
 module.exports = DBHandler

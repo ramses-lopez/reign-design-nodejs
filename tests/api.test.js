@@ -2,7 +2,6 @@ const test = require('tape')
 const moment = require('moment')
 const Article = require('../mongoConnect.js').model
 const dbHandler = require('../dbHandler.js')
-const _log = (...args) => console.log(require('util').inspect(...args, { depth: Infinity }))
 
 test('it takes an article object from API and turns it into a valid object', assert => {
 	const article = {
@@ -75,5 +74,24 @@ test('it sets an appropriate date label according to the article date', assert =
 	actual = dbHandler.dateLabel('2017-09-08T09:54:58', '2017-09-08T10:54:58')
 	assert.equal(actual, expected, 'should return an hour label')
 
+	assert.end()
+})
+
+test('it returns just the articles newer than a given date', assert => {
+	const articlesMock = [
+		{ "created_at": "2016-09-08T09:54:58.000Z", "title": 'fake title 1'},
+		{ "created_at": "2017-09-03T09:54:58.000Z", "title": 'fake title 2'},
+		{ "created_at": "2017-08-08T09:54:58.000Z", "title": 'fake title 3'},
+		{ "created_at": "2017-09-08T09:54:58.000Z", "title": 'fake title 4'}
+	]
+
+	const expected = [
+		{ "created_at": "2017-09-03T09:54:58.000Z", "title": 'fake title 2'},
+		{ "created_at": "2017-09-08T09:54:58.000Z", "title": 'fake title 4'}
+	]
+
+	const actual = articlesMock.filter(dbHandler.filterArticlesByDate('2017-09-01T09:54:58.000Z') )
+
+	assert.deepEqual(actual, expected, 'should return just the articles newer than given date')
 	assert.end()
 })

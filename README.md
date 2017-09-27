@@ -27,7 +27,9 @@ npm test # run the tests
 ```
 
 The app will fetch the current news available at `https://hn.algolia.com/api/v1/search_by_date?query=nodejs`.
-After that, it will automatically fetch articles according to the time defined on `REFRESH_INTERVAL`
+After that, it will automatically fetch articles according to the time defined on `REFRESH_INTERVAL`.
+To avoid duplication of articles, before each fetch, the app checks the creation date of the last article,
+and saves only the newer articles.
 
 ---------------------
 Thanks for for your review! :shipit:
