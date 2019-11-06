@@ -9,7 +9,7 @@
     "font-awesome": "^4.7.0",
     "jade": "^1.11.0",
     "moment": "^2.18.1",
-    "mongoose": "^4.11.13",
+    "mongoose": "^5.7.5",
     "node-fetch": "^1.7.3"
   },
   "devDependencies": {
